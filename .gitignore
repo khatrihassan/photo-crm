@@ -1,4 +1,4 @@
 venv/
 __pycache__/
 .DS_Store
-photo-crm.db
+photo_crm.db
