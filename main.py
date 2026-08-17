@@ -32,7 +32,7 @@ def get_client(client_id: str):
         if client["id"] == client_id:
             return client
     # TODO: if the loop finishes without finding one, return {"error": "not found"}
-    raise HTTPException(status_code=404, detail="Client not found")
+    raise HTTPException(status_code=404, detail="Client not found") #raises an exception error when client is not found
 
 @app.post("/clients")   #registers the function for POST requests to /clients
 def create_client(new_client: NewClient):
