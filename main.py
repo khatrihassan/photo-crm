@@ -61,3 +61,15 @@ def delete_client(client_id: str):
     if rowcounter == 0:
         raise HTTPException(status_code=404, detail="Client not found")
     return {"deleted": client_id}
+
+@app.put("/clients/{client_id}")
+def update_client(client_id: str, updated: NewClient):
+    connection =  get_connection()
+    cursor = connection.cursor()
+    cursor.execute("UPDATE clients SET name = ?, email = ? WHERE id = ?", (updated.name, updated.email, client_id))
+    rowcounter = cursor.rowcount
+    connection.commit()
+    connection.close()
+    if rowcounter == 0:
+        raise HTTPException(status_code=404, detail = "Client not found")
+    return {"updated": client_id}
