@@ -1,33 +1,38 @@
 import sqlite3
 
-connection = sqlite3.connect("photo_crm.db")
+def get_connection():
+    connection = sqlite3.connect("photo_crm.db")
+    connection.row_factory = sqlite3.Row
+    return connection
 
-cursor = connection.cursor()
+def init_db():
+    connection = get_connection()
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS clients (
+    cursor = connection.cursor()
+
+    cursor.execute("""CREATE TABLE IF NOT EXISTS clients (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL
-)""")
+    )""")
 
-cursor.execute(
-    "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
-    ("01", "TwinsBarberShop", "sb@twinsbbs.com")
-)
+    cursor.execute(
+        "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
+        ("01", "TwinsBarberShop", "sb@twinsbbs.com")
+    )
 
-cursor.execute(
-    "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
-    ("02", "TwinsCoffeeShop", "eshan@twins.com")
-)
+    cursor.execute(
+        "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
+        ("02", "TwinsCoffeeShop", "eshan@twins.com")
+    )
 
-cursor.execute(
-    "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
-    ("03", "CommonwealthCoffee", "cmw@commonwealthcafe.com")
-)
+    cursor.execute(
+        "INSERT OR IGNORE INTO clients (id, name, email) VALUES (?, ?, ?)",
+        ("03", "CommonwealthCoffee", "cmw@commonwealthcafe.com")
+    )
 
-cursor.execute("SELECT * FROM clients")
-print(cursor.fetchall())
 
-connection.commit()
 
-connection.close()
+    connection.commit()
+
+    connection.close()

@@ -1,14 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-
-
+from db import get_connection, init_db
 import sqlite3
-def get_connection():
-    connection = sqlite3.connect("photo_crm.db")
-    connection.row_factory = sqlite3.Row
-    return connection
 
 app = FastAPI()
+
+init_db()
 
 
 class NewClient(BaseModel):
@@ -68,12 +65,12 @@ def delete_client(client_id: str):
 
 @app.put("/clients/{client_id}")
 def update_client(client_id: str, updated: NewClient):
-    connection =  get_connection()
+    connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("UPDATE clients SET name = ?, email = ? WHERE id = ?", (updated.name, updated.email, client_id))
     rowcounter = cursor.rowcount
     connection.commit()
     connection.close()
     if rowcounter == 0:
-        raise HTTPException(status_code=404, detail = "Client not found")
+        raise HTTPException(status_code=404, detail="Client not found")
     return {"updated": client_id}
