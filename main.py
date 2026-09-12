@@ -42,9 +42,13 @@ def get_client(client_id: str):
 def create_client(new_client: NewClient):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO clients (id, name, email) VALUES (?, ?, ?)",
+    try:
+        cursor.execute("INSERT INTO clients (id, name, email) VALUES (?, ?, ?)",
                    (new_client.id, new_client.name, new_client.email)
                    )
+    except sqlite3.IntegrityError:
+        connection.close()
+        raise HTTPException(status_code=409, detail="A client with that id already exists")
     connection.commit()
     connection.close()
     client_dict = new_client.model_dump()
