@@ -35,7 +35,7 @@ def get_client(client_id: str):
     return dict(row)
    
 
-@app.post("/clients")
+@app.post("/clients", status_code=201)
 def create_client(new_client: NewClient):
     connection = get_connection()
     cursor = connection.cursor()
