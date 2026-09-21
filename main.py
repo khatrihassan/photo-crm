@@ -13,6 +13,12 @@ class NewClient(BaseModel):
     name: str
     email: str
 
+class NewShoot(BaseModel):
+    id: str
+    date: str
+    shoot_type: str
+    status: str
+
 
 @app.get("/clients")
 def get_clients():
@@ -74,3 +80,29 @@ def update_client(client_id: str, updated: NewClient):
     if rowcounter == 0:
         raise HTTPException(status_code=404, detail="Client not found")
     return {"updated": client_id}
+
+@app.post("/clients/{client_id}/shoots", status_code=201)
+def create_shoot(client_id: str, new_shoot: NewShoot):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM clients WHERE id = ?", (client_id,))
+    if cursor.fetchone() is None:
+        connection.close()
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    try:
+        cursor.execute(
+            "INSERT INTO shoots (id, client_id, date, shoot_type, status) VALUES (?, ?, ?, ?, ?)",
+            (new_shoot.id, client_id, new_shoot.date, new_shoot.shoot_type, new_shoot.status)
+        )
+    except sqlite3.OperationalError:
+        connection.close()
+        raise HTTPException(status_code=409, detail="A shoot with that id already exists")
+    
+    connection.commit()
+    connection.close()
+
+    shoot_dict = new_shoot.model_dump()
+    shoot_dict["client_id"] = client_id
+    return shoot_dict
